@@ -1,0 +1,45 @@
+name: ftltask
+description: A new Flutter application.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+
+  cupertino_icons: ^0.1.3
+  sqflite: any
+  path_provider: any
+  intl: any
+  speech_to_text: ^2.5.0
+  avatar_glow: ^1.2.0
+  highlight_text: ^0.7.2
+  auto_size_text: ^2.1.0
+  lottie: 0.6.0
+  flutter_slidable: ^0.5.7
+
+
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/ToDo.json
+
+

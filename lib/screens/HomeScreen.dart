@@ -6,34 +6,31 @@ import 'package:ftltask/models/ToDo.dart';
 import 'package:ftltask/screens/OperationsScreen.dart';
 import 'package:ftltask/screens/ToDoDetails.dart';
 import 'package:ftltask/utils/Database_Helper.dart';
-
+import 'package:ftltask/utils/ThemeChanger.dart';
+import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:sqflite/sqflite.dart';
 
+//This class displays all the Entries and can be called as a Homepage
 
-
-
-class HomeScreen extends StatefulWidget
-{
+class HomeScreen extends StatefulWidget {
   static String id = 'homeScreen';
-
-
-
   @override
-  State<StatefulWidget> createState()
-  {
+  State<StatefulWidget> createState() {
     return HomeScreenState();
   }
 }
 
 class HomeScreenState extends State<HomeScreen> {
-
+  static var deleteId;
   static var deletedTitle;
   static var deletedDesc;
   static var deletedDate;
+
+  var complete = false;
 
   DatabaseHelper databaseHelper = DatabaseHelper();
 
@@ -73,23 +70,37 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
-    // myInit();
   }
 
   @override
   Widget build(BuildContext context) {
-    // updateListView();
-
     if (todoList == null) {
       todoList = List<ToDoHelperClass>();
       updateListView();
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('To Do'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              title: Text('Dark Theme'),
+              trailing: Switch(
+                value: Provider.of<ThemeState>(context, listen: false).theme ==
+                    ThemeType.DARK,
+                onChanged: (value) {
+                  Provider.of<ThemeState>(context, listen: false).theme =
+                      value ? ThemeType.DARK : ThemeType.LIGHT;
+
+                  setState(() {});
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       body: count == 0
           ? Animations()
@@ -99,67 +110,60 @@ class HomeScreenState extends State<HomeScreen> {
                 return InkWell(
                   onTap: () {
                     print("Tapped on ${todoList[index].title}");
-                    
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => ToDoDetails(
-                        todoList[index].title,
-                        todoList[index].description,
 
-                      )
-                    ));
-
-
-
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ToDoDetails(
+                                  todoList[index].id,
+                                  todoList[index].title,
+                                  todoList[index].description,
+                                )));
                   },
                   child: Dismissible(
                     direction: DismissDirection.endToStart,
                     key: Key(todoList[index].title),
-                    onDismissed: (direction)
-                    {
-
+                    onDismissed: (direction) {
+                      deleteId = todoList[index];
                       deletedTitle = todoList[index].title;
                       deletedDesc = todoList[index].description;
                       deletedDate = todoList[index].date;
 
+                      print("deleted title i s $deletedTitle");
                       delete(context, todoList[index]);
+                      // setState(() {
+                      //   complete = true;
+                      //
+                      // });
                     },
-                    background: Container(color: Colors.red,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 300.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(Icons.delete,
-                            color: Colors.white,
-                          ),
-                          Text('Delete',
-                          style: TextStyle(
-                            color: Colors.white
-                          ),)
-                        ],
-
+                    background: Container(
+                      color: Colors.red,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 300.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-
-                    ),
                     child: Card(
+                      elevation: 5.0,
                       child: ListTile(
-                        leading: IconButton(
-                          onPressed: ()
-                          {
-
-                            navigateToDetail(ToDoHelperClass(todoList[index].id,todoList[index].title,todoList[index].description,""), "Edit");
-
-
-                          },
-                          icon: Icon(Icons.edit)
-                        ),
-                        title: Padding(
-                          padding: EdgeInsets.all(1.0),
-                          child: Text(
-                            '${this.todoList[index].title}',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                        title: Text(
+                          '${this.todoList[index].title}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 21.0,
                           ),
                         ),
                         subtitle: Row(
@@ -181,7 +185,7 @@ class HomeScreenState extends State<HomeScreen> {
                               child: Padding(
                                 padding: EdgeInsets.all(1.0),
                                 child: Text(
-                                  "   ${this.todoList[index].description},",
+                                  " ${this.todoList[index].description}",
                                   maxLines: 1,
                                 ),
                               ),
@@ -189,21 +193,27 @@ class HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         trailing: GestureDetector(
-                          child: Icon(Icons.delete),
+                          child: Icon(Icons.edit),
                           onTap: () {
-                            delete(context, todoList[index]);
+                            navigateToDetail(
+                                ToDoHelperClass(
+                                    todoList[index].id,
+                                    todoList[index].title,
+                                    todoList[index].description,
+                                    ""),
+                                "Edit");
                           },
                         ),
                       ),
                     ),
                   ),
                 );
-
               },
             ),
       floatingActionButton: FloatingActionButton(
+        elevation: 10.0,
         onPressed: () {
-          navigateToDetail(ToDoHelperClass('','','',''),"Add");
+          navigateToDetail(ToDoHelperClass('', '', '', ''), "Add");
         },
         tooltip: 'Add To Do',
         child: Icon(Icons.add),
@@ -213,9 +223,8 @@ class HomeScreenState extends State<HomeScreen> {
 
   void navigateToDetail(ToDoHelperClass todo, String title) async {
     bool result =
-        await Navigator.push(context, MaterialPageRoute(builder: (context)
-        {
-      return OperationsScreen(todo,title);
+        await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return OperationsScreen(todo, title);
     }));
 
     if (result == true) {
@@ -240,38 +249,30 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void delete(BuildContext context, ToDoHelperClass todo) async
-  {
+  void delete(BuildContext context, ToDoHelperClass todo) async {
     int result = await databaseHelper.deleteData(todo.id);
     print(todo.id);
 
-    if (result != 0)
-    {
-      showSnackBar(context, 'Note Deleted Successfully');
+    if (result != 0) {
+      showSnackBar(context, 'Entry Deleted Successfully');
       updateListView();
     }
   }
 
-  void showSnackBar(BuildContext context, String message)
-  {
+  void showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(
-        content: Text(message),
-            action: SnackBarAction(
+      content: Text(message),
+      action: SnackBarAction(
         label: "UNDO",
-      onPressed: ()
-      {
-        var result = databaseHelper.insertData(deletedTitle, deletedDesc, deletedDate);
+        onPressed: () {
+          var result =
+              databaseHelper.insertData(deletedTitle, deletedDesc, deletedDate);
 
-        if (result != 0)
-        {
-          updateListView();
-
-        }
-
-      },
-    ),
-
-
+          if (result != 0) {
+            updateListView();
+          }
+        },
+      ),
     );
     Scaffold.of(context).showSnackBar(snackBar);
   }

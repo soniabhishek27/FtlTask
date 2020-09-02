@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:ftltask/models/ToDo.dart';
 
+import 'package:flutter_slidable/flutter_slidable.dart';
+
+
 
 
 class DatabaseHelper {
@@ -41,8 +44,8 @@ class DatabaseHelper {
     String path = directory.path + 'ToDo.db';
 
     // Open/create the database at a given path
-    var notesDatabase = await openDatabase(path, version: 1, onCreate: _createDb);
-    return notesDatabase;
+    var todoDatabase = await openDatabase(path, version: 1, onCreate: _createDb);
+    return todoDatabase;
   }
 
   void _createDb(Database db, int newVersion) async {
@@ -51,7 +54,7 @@ class DatabaseHelper {
         '$colDescription TEXT, $colDate TEXT)');
   }
 
-  // Fetch Operation: Get all note objects from database
+  // Fetch Operation: Get all entry objects from database
   Future<List<Map<String, dynamic>>> getAllMapList() async
   {
     Database db = await this.database;
@@ -119,22 +122,6 @@ class DatabaseHelper {
 
 
 
-  // Get the 'Map List' [ List<Map> ] and convert it to 'ToDo List' [ List<Note> ]
-  // Future<List<ToDoHelperClass>> getNoteList() async
-  // {
-  //
-  //   var noteMapList = await getNoteMapList();
-  //   print("noteMapList is $noteMapList");// Get 'Map List' from database
-  //   int count = noteMapList.length;         // Count the number of map entries in db table
-  //
-  //   List<ToDoHelperClass> ToDoList = List<ToDoHelperClass>();
-  //   // For loop to create a 'to_do List' from a 'Map List'
-  //   for (int i = 0; i < count; i++)
-  //   {
-  //     ToDoList.add(ToDoHelperClass.fromMapObject(noteMapList[i]));
-  //   }
-  //
-  //   return ToDoList;
-  // }
+
 
 }

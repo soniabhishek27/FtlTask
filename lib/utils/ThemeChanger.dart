@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+// this class uses Provider state management library and performs light and dark theme operations
+
 enum ThemeType {DARK, LIGHT}
 
 class ThemeState extends ChangeNotifier
@@ -33,17 +36,12 @@ class ThemeState extends ChangeNotifier
     
   }
 
-
-
-
   Future<ThemeType> getTheme() async
   {
     SharedPreferences preferences =await SharedPreferences.getInstance();
     _isDarkTheme = preferences.getBool('isDark') ?? false;
 
     return _isDarkTheme ? ThemeType.DARK : ThemeType.LIGHT;
-
-
   }
 
 

@@ -6,7 +6,7 @@ import 'package:ftltask/models/ToDo.dart';
 
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-
+// This is database class it includes all backend database processes and operations
 
 
 class DatabaseHelper {
